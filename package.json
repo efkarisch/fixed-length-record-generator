@@ -1,0 +1,34 @@
+{
+  "name": "fixedlengthrecordgenerator",
+  "version": "1.0.0",
+  "description": "Converts data in ArrayOfArrays to a Fixed Length Record",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ekarischcsi/fixed-length-record-generator.git"
+  },
+  "keywords": [
+    "fixed",
+    "length",
+    "record",
+    "flr",
+    "file",
+    "frl",
+    "file",
+    "fixed",
+    "width",
+    "record"
+  ],
+  "author": "Edward Karisch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ekarischcsi/fixed-length-record-generator/issues"
+  },
+  "homepage": "https://github.com/ekarischcsi/fixed-length-record-generator#readme",
+  "dependencies": {
+    "require": "^2.4.20"
+  }
+}

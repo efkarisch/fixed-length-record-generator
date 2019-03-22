@@ -42,7 +42,7 @@ const prod = true; // IMPORTANT! - change to true(boolean) before pushing to rep
 
 
 //@todo this path will be replaced with npm module when I'm done creating it.
-const StringBuilder = require('../NodeStringBuilder/src/index.js'); //change to npm module called stringbuilder  - @todo [Ed]
+const StringBuilder = require('../NodeStringBuilder/src/index.js');
 let publicObj = {};
 let privateObj = {};
 privateObj.fields = []; //@todo need to build this dynamically in the initOptions() - [x]

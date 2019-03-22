@@ -26,7 +26,7 @@ let options = {
                 defaultValue: 'Doe',
             },
             {
-                name: 'PigmyButt',
+                name: 'Email',
                 width: 75,
                 justify: 'left',
                 defaultValue: '',
