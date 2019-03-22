@@ -25,6 +25,9 @@ const prod = true; // IMPORTANT! - change to true(boolean) before pushing to rep
  * 2. build some good error handling
  * 3. build a checkSchema function, to output any issues
  * 4. build a readFRL function
+ * 5. Update library to contain/register hooks: https://docs.feathersjs.com/api/hooks.html
+ * 6. #5 will allow for things like a validation schema property containing a regex or some other test method
+ * 6B. Detect if passed in function, if not assume regex, if regex fails (add test) then throw an error giving a message with the two available types of validation methodologies.
  **/
 
 
@@ -252,7 +255,7 @@ privateObj.initOptions = function(opts, dataArrOfArrays){
         let rowLength   = headers.length; //could be data row and not header
 
 
-        if(rowLength !== privateObj.fieldCT) privateObj.handleError('Data mismatch! Invalid schema contains ' + fieldCT + ' fields. Please add missing fields to schema.');
+        if(rowLength !== privateObj.fieldCT) privateObj.handleError('Data mismatch! INVALID SCHEMA: contains ' + rowLength + ' fields. Please adjust header fields to correlate with schema.');
 
         if(!prod)console.log('[headers] [schemafields]',headers,privateObj.fields);
 
@@ -266,7 +269,7 @@ privateObj.initOptions = function(opts, dataArrOfArrays){
 
         //if(!prod)console.log('headers',headers,'first row check results h=vCT?', privateObj.fieldCT,rowLength);
 
-        if(rowLength && rowLength !== privateObj.fieldCT) privateObj.handleError('Data mismatch! Invalid schema check to make sure schema name properties for fields matches with data headers (first row of data). Please make sure necessary values are exactly the same');
+        if(rowLength && rowLength !== privateObj.fieldCT) privateObj.handleError('Data mismatch! INVALID SCHEMA: check to make sure schema name properties for fields matches with data headers (first row of data). NOTE: make sure necessary values are named exactly the same');
 
 
         console.log('row length value',rowLength);

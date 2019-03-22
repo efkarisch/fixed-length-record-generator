@@ -26,7 +26,7 @@ let options = {
                 defaultValue: 'Doe',
             },
             {
-                name: 'Email',
+                name: 'PigmyButt',
                 width: 75,
                 justify: 'left',
                 defaultValue: '',
@@ -42,9 +42,9 @@ let options = {
 let myData = [
 
     [
-        "Last",
         "First",
-        "Email"
+        "Last",
+        "Email",
     ],
     [
         "Munson",
