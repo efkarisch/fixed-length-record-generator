@@ -1,4 +1,4 @@
-const prod = false; // IMPORTANT! - change to true(boolean) before pushing to repo
+const prod = true; // IMPORTANT! - change to true(boolean) before pushing to repo
 
 /*----------------------------------------------Move this to Readme.md------------------------------------------------*/
 
@@ -191,7 +191,7 @@ privateObj.runTest = function() {
 
 
 
-privateObj.initOptions = function(opts){
+privateObj.initOptions = function(opts, dataArrOfArrays){
 
     //if options paramter does not exist, throw error
     if(!opts) privateObj.handleError('options object must be passed in as first parameter');
@@ -269,13 +269,14 @@ privateObj.initOptions = function(opts){
         if(rowLength && rowLength !== privateObj.fieldCT) privateObj.handleError('Data mismatch! Invalid schema check to make sure schema name properties for fields matches with data headers (first row of data). Please make sure necessary values are exactly the same');
 
 
-        if(rowLength){ //map values in schema, headers were passed in and verified (otherwise default valueAtIndex property was already set to match schema index
+        console.log('row length value',rowLength);
+
+        if(rowLength) { //map values in schema, headers were passed in and verified (otherwise default valueAtIndex property was already set to match schema index
 
             headers = dataArrOfArrays.shift(); //remove headers from data (no longer needed)
+            console.log('are these headers?', headers);
 
-            /**
-             UNSURE IF THIS IS NEEDED \\@todo DELETE THIS?
-            for(let j = 0; j < privateObj.fieldCT; j++){
+             for(let j = 0; j < privateObj.fieldCT; j++){
 
                 console.log('header:', headers[j]);
 
@@ -283,15 +284,14 @@ privateObj.initOptions = function(opts){
 
                 console.log('field from fields private arr', privateObj.fields[j]);
 
+                 opts.schema[j].valueAtIndex =  headers.indexOf(privateObj.fields[j]);
 
-
-                //opts.schema[j].valueAtIndex =  headers.indexOf(privateObj.fields[j]);
             }
-             **/
 
         }
 
-    //if(!prod) console.log('initialized options',opts);
+        //if(!prod)}
+        console.log('initialized options',opts);
 
     return opts;
 
@@ -312,9 +312,7 @@ privateObj.handleError = function(msg){
 publicObj.buildFLR = function(options, dataArrOfArrays){
 
     //if defaults not specified, add program's DEFAULT_OPTIONS
-    options = privateObj.initOptions(options/**, dataArrOfArrays **/);
-
-    //@todo check if value override is set in data loop and perform accordingly - []
+    options = privateObj.initOptions( options, dataArrOfArrays );
 
     let len = dataArrOfArrays.length;
 
