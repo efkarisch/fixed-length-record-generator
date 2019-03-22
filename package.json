@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/ekarischcsi/fixed-length-record-generator#readme",
   "dependencies": {
+    "another-string-builder": "^1.0.0",
     "require": "^2.4.20"
   }
 }

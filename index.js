@@ -1,48 +1,6 @@
-const prod = true; // IMPORTANT! - change to true(boolean) before pushing to repo
-
-/*----------------------------------------------Move this to Readme.md------------------------------------------------*/
-
-/**
- * Build steps
- * Format Data - take fieldOptions, and an array containing array(s) of values to output data in a desired format
- *  - default options data is filler, does not override specified non-default schema options
- *  //if header row is provided in data, make sure each schema object has
- * Return resultant data as a string, with values built like this: <prepading><(paddingLeft)value(paddingRight)><postpading>
- * Catch, if not enough fields or columns in data (data must have same # of fields as schema defines)
- **/
-
-/**
- * Checks: //@todo Make sure these items are accounted for in build function
- * Make sure schema fields match cols for data - [x]
- * If header row is provided in data, make sure each field in schema has appropriate value index as valueMap value - [],  == indexOf(colheader) result
- * If header row is not provided, assume schemaMap is in incrementing order from 0, and valueMap has same indexes - []
- * Build data values based on valueMap, check defaults and data transformations from schemaMap
- */
-
-/**
- * Future items @todo
- * 1. Make sure that the object structure that was passed in is correct, make sure necessities are provided (*)
- * 2. build some good error handling
- * 3. build a checkSchema function, to output any issues
- * 4. build a readFRL function
- * 5. Update library to contain/register hooks: https://docs.feathersjs.com/api/hooks.html
- * 6. #5 will allow for things like a validation schema property containing a regex or some other test method
- * 6B. Detect if passed in function, if not assume regex, if regex fails (add test) then throw an error giving a message with the two available types of validation methodologies.
- **/
-
-
-/** DOCUMENTATION
- * Example of use in privateObj.runTest() function below (first function in Functions section)
- * Available option properties, ()=default values
- * @object {defaults: {schema} + {valueOverride: boolean(false), schemaOverride: boolean(false)} }
- * @array { schema: *[{ name: string, width: int(1), defaultValue: string, padchar: string, justify: string(left), prepad: int, postpad: int}, 'valueAtIndex: int(auto-populated)] }
- **/
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 
 //@todo this path will be replaced with npm module when I'm done creating it.
-const StringBuilder = require('../NodeStringBuilder/src/index.js');
+const StringBuilder = require('another-string-builder');
 let publicObj = {};
 let privateObj = {};
 privateObj.fields = []; //@todo need to build this dynamically in the initOptions() - [x]
@@ -124,76 +82,6 @@ String.prototype.justify = function(char, times, pos){
  * Functions:
  ********************/
 
-privateObj.runTest = function() {
-
-    //THIS EXAMPLE SHOWS HOW YOU SETUP THE OPTIONS
-
-    options = {
-
-        defaults:
-            {
-                padchar: ' ',
-                justify: 'left',
-                valueOverride: true,
-
-            },
-        schema:
-            [
-                {
-                    name: 'First',
-                    width: 20,
-                    defaultValue: '',
-                    prepad: 0,
-                },
-                {
-                    name: 'Last',
-                    width: 20,
-                    defaultValue: 'Doe',
-                },
-                {
-                    name: 'Email',
-                    width: 15,
-                    justify: 'right',
-                    defaultValue: '',
-                    padchar: '*',
-                    postpad: 0,
-                }
-            ]
-    };
-
-    dataArrOfArrays = [
-
-        [
-          "Last",
-          "First",
-          "Email"
-        ],
-        [
-            "Munson",
-            "John",
-            "JaysMunchin@gitmail.com"
-        ],
-        [
-            "Karisch",
-            "Ed",
-            "SpecialEd@gitmail.com"
-        ],
-        [
-            "Stevens",
-            "Josh",
-            "JoshCapone@gitmail.com"
-        ]
-
-    ];
-
-    let flrData  = publicObj.buildFLR(options, dataArrOfArrays);
-
-    console.log(flrData);
-
-};//runTest()
-
-
-
 privateObj.initOptions = function(opts, dataArrOfArrays){
 
     //if options paramter does not exist, throw error
@@ -248,7 +136,7 @@ privateObj.initOptions = function(opts, dataArrOfArrays){
 
     }//End first schema loop
 
-    if(!prod)console.log('Value mappings related to defined fields in schema:\n', privateObj.schemaMap);
+    //console.log('Value mappings related to defined fields in schema:\n', privateObj.schemaMap);
 
         //Now begin section to populate schema with correct value index
         let headers     = dataArrOfArrays[0];
@@ -257,49 +145,47 @@ privateObj.initOptions = function(opts, dataArrOfArrays){
 
         if(rowLength !== privateObj.fieldCT) privateObj.handleError('Data mismatch! INVALID SCHEMA: contains ' + rowLength + ' fields. Please adjust header fields to correlate with schema.');
 
-        if(!prod)console.log('[headers] [schemafields]',headers,privateObj.fields);
+        //console.log('[headers] [schemafields]',headers,privateObj.fields);
 
         let fields = privateObj.fields;
 
         headers = headers.unique(fields);
 
-        //if(!prod)console.log('fields & privateObj.fields:',fields,privateObj.fields);
+        //console.log('fields & privateObj.fields:',fields,privateObj.fields);
 
         rowLength = headers.length; //re-evaluate
 
-        //if(!prod)console.log('headers',headers,'first row check results h=vCT?', privateObj.fieldCT,rowLength);
+        //console.log('headers',headers,'first row check results h=vCT?', privateObj.fieldCT,rowLength);
 
         if(rowLength && rowLength !== privateObj.fieldCT) privateObj.handleError('Data mismatch! INVALID SCHEMA: check to make sure schema name properties for fields matches with data headers (first row of data). NOTE: make sure necessary values are named exactly the same');
 
 
-        console.log('row length value',rowLength);
+        //console.log('row length value',rowLength);
 
         if(rowLength) { //map values in schema, headers were passed in and verified (otherwise default valueAtIndex property was already set to match schema index
 
             headers = dataArrOfArrays.shift(); //remove headers from data (no longer needed)
-            console.log('are these headers?', headers);
+           // console.log('are these headers?', headers);
 
              for(let j = 0; j < privateObj.fieldCT; j++){
 
-                console.log('header:', headers[j]);
+                //console.log('header:', headers[j]);
 
-                console.log('valueAtIndex:', opts.schema[j].valueAtIndex);
+                //console.log('valueAtIndex:', opts.schema[j].valueAtIndex);
 
-                console.log('field from fields private arr', privateObj.fields[j]);
+                //console.log('field from fields private arr', privateObj.fields[j]);
 
                  opts.schema[j].valueAtIndex =  headers.indexOf(privateObj.fields[j]);
 
             }
 
         }
-
-        //if(!prod)}
-        console.log('initialized options',opts);
+        
+        //console.log('initialized options',opts);
 
     return opts;
 
 };//initOptions()
-
 
 //@todo In AWS Lambda, or other cases, you may not want to throw errors, if so, determine what to do here:
 privateObj.handleError = function(msg){
@@ -319,7 +205,7 @@ publicObj.buildFLR = function(options, dataArrOfArrays){
 
     let len = dataArrOfArrays.length;
 
-    if(!prod)console.log('Processing ' + len + ' rows of data' );
+    //console.log('Processing ' + len + ' rows of data' );
 
     let sb = new StringBuilder();
 
@@ -343,7 +229,7 @@ publicObj.buildFLR = function(options, dataArrOfArrays){
                     padChar  = options.schema[j].padchar,
                     override = options.defaults.valueOverride;
 
-                //if(!prod)console.log('justPos,width,defVal,prePad,postPad,dataVal,padChar,override:',justPos,width,defVal,prePad,postPad,dataVal,"'"+padChar+"'",override );
+                //console.log('justPos,width,defVal,prePad,postPad,dataVal,padChar,override:',justPos,width,defVal,prePad,postPad,dataVal,"'"+padChar+"'",override );
 
                 if(override) dataVal = defVal ? defVal : dataVal; //pre-build operation
                 dataVal = dataVal.substr(0,width);
@@ -358,7 +244,7 @@ publicObj.buildFLR = function(options, dataArrOfArrays){
 
             //create new line for new record/row
 
-            if(!prod)console.log('done with row: ' + privateObj.currentRow);
+            //console.log('done with row: ' + privateObj.currentRow);
             if(privateObj.currentRow !== privateObj.fieldCT ) sb.append( String('\n') );
 
     }//end looping through rows of data
@@ -366,7 +252,4 @@ publicObj.buildFLR = function(options, dataArrOfArrays){
     return sb.toString('',true);
 };//buildFLR()
 
-
-if(!prod)module.exports = privateObj;
-else
 module.exports = publicObj;
