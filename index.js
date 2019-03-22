@@ -4,7 +4,7 @@ const prod = false; // IMPORTANT! - change to true(boolean) before pushing to re
 
 /**
  * Build steps
- * Format Data - take fieldOptions, and csv values to output data in a desired format
+ * Format Data - take fieldOptions, and an array containing array(s) of values to output data in a desired format
  *  - default options data is filler, does not override specified non-default schema options
  *  //if header row is provided in data, make sure each schema object has
  * Return resultant data as a string, with values built like this: <prepading><(paddingLeft)value(paddingRight)><postpading>
@@ -32,17 +32,17 @@ const prod = false; // IMPORTANT! - change to true(boolean) before pushing to re
  * Example of use in privateObj.runTest() function below (first function in Functions section)
  * Available option properties, ()=default values
  * @object {defaults: {schema} + {valueOverride: boolean(false), schemaOverride: boolean(false)} }
- * @array { schema: *[{ name: string, width: int(1), defaultValue: string, padchar: string, justify: string(left), prepad: int, postpad: int}] }
+ * @array { schema: *[{ name: string, width: int(1), defaultValue: string, padchar: string, justify: string(left), prepad: int, postpad: int}, 'valueAtIndex: int(auto-populated)] }
  **/
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 
-
-const StringBuilder = require('./index.js'); //change to npm module called stringbuilder  - @todo [Ed]
+//@todo this path will be replaced with npm module when I'm done creating it.
+const StringBuilder = require('../NodeStringBuilder/src/index.js'); //change to npm module called stringbuilder  - @todo [Ed]
 let publicObj = {};
 let privateObj = {};
-privateObj.fields = [];
+privateObj.fields = []; //@todo need to build this dynamically in the initOptions() - [x]
 privateObj.fieldCT = 0;
 privateObj.schemaMap = {};
 privateObj.headerMap = {};
@@ -55,7 +55,67 @@ privateObj.DEFAULT_OPTIONS = { //These are the minimum defaults for the program 
 };// DEFAULT_OPTIONS
 
 
-if(!prod)privateObj.runTest(); //this is only for development
+
+/*****************************************************
+ *  Prototype Methods Used In Business Logic
+ *****************************************************/
+
+//Find and return unique values against comparator (b)
+Array.prototype.unique = function(b){
+
+    let aLen = this.length,
+        len  = b.length;
+
+    if(aLen < len){
+
+        len = aLen;
+
+        return gather(this,b);
+
+    }else{
+
+        return gather(b,this);
+    }
+
+    function gather(needleArr,haystackArr){
+
+        let uniqueArr = [];
+
+        while(len){
+
+            let curVal = needleArr.pop();
+
+            if(haystackArr.indexOf(curVal) > -1 && uniqueArr.indexOf(curVal) < 0)
+                uniqueArr.push(curVal);
+            len -= 1;
+        }//loop
+
+        return uniqueArr;
+
+    }//gather()
+
+};//Array.prototype.unique()
+
+//Pad and return a string in specified justification position
+String.prototype.justify = function(char, times, pos){
+
+    switch(pos[0].toLowerCase()) {
+        case 'l':
+            return this.padEnd(times,char);
+            break;
+        case 'r':
+            return this.padStart(times,char);
+            break;
+        default:
+            throw 'Unable to interpret value: ' + pos + 'for String.justify prototype. Please specify a position of "left" or "right"';
+            break;
+    }
+};
+
+
+
+//THIS IS ONLY FOR DEVELOPMENT
+if(!prod)privateObj.runTest();
 
 
 
@@ -100,7 +160,7 @@ privateObj.runTest = function() {
             ]
     };
 
-    csvDataArr = [
+    dataArrOfArrays = [
         [
           "First",
           "Last",
@@ -124,7 +184,7 @@ privateObj.runTest = function() {
 
     ];
 
-    flrData  = buildFLR(options, csvDataArr);
+    flrData  = buildFLR(options, dataArrOfArrays);
 
     console.log(flrData);
 
@@ -143,14 +203,13 @@ privateObj.initOptions = function(opts){
     if(opts.hasOwnProperty('defaults'))
 
         for (var property in privateObj.DEFAULT_OPTIONS) {
-
+            if(property == 'valueAtIndex') continue; //don't allow user to set this property
             //if passed in defaults and value exists in passed in object, skip & keep, else add program defaults
             if (!opts.defaults.hasOwnProperty(property)) {
                 opts.defaults[property] = privateObj.DEFAULT_OPTIONS[property];
             }
 
         }//property loop
-
 
     //number of fields = number of fields in schema
     privateObj.fieldCT = opts.schema.length;
@@ -161,7 +220,7 @@ privateObj.initOptions = function(opts){
         //defaults loop
         for( property in opts.defaults){ //property = property from defaults
 
-            if(property == 'valueOverride' || property == 'schemaOverride') continue;
+            if(property == 'valueOverride' || property == 'schemaOverride' || property == 'valueAtIndex') continue; //These values should not be set at individual field schema level
 
             //if schemaOverride is true, always set schema property to default property value
             if(opts.defaults.schemaOverride){
@@ -179,9 +238,30 @@ privateObj.initOptions = function(opts){
             }
 
         }//End defaults loop
+        let fieldName = opts.schema[i]['name'];
+        privateObj.fields.push(fieldName);
+        privateObj.schemaMap[i] = fieldName; //used if header row is provided, else unused
+        opts.schema[i].valueAtIndex = [i];
 
-        privateObj.fields.push(opts.schema[i]['name'])
+        //Now populate schema with correct value index
+        let headers     = dataArrOfArrays[0];
+        let rowLength   = headers.length; //could be data row and not header
 
+        if(rowLength !== privateObj.fieldCT) privateObj.handleError('Data mismatch! Invalid schema contains ' + fieldCT + ' fields. Please add missing fields to schema.');
+
+        headers = headers.unique(privateObj.fields);
+        rowLength = headers.length; //re-evaluate
+
+        if(rowLength && rowLength !== privateObj.fieldCT) privateObj.handleError('Data mismatch! Invalid schema check to make sure schema name properties for fields matches with data headers (first row of data). Please make sure necessary values are exactly the same');
+
+        if(rowLength){ //map values in schema, headers were passed in and verified (otherwise default valueAtIndex property was already set to match schema index
+
+            dataArrOfArrays.shift(); //remove headers from data (no longer needed)
+
+            for(var i = 0; i < privateObj.fieldCT; i++){
+                opts.schema[i].valueAtIndex =  headers.indexOf(privateObj.schemaMap[i]);
+            }
+        }
     }//End schema loop
 
     return opts;
@@ -198,89 +278,53 @@ privateOjb.handleError = function(msg){
  * buildFLR - returns <string> containing FLR data
  * @param options, object that contains two properties:
  *  - defaults: object, schema: Array of Objects
- * @param csvdataArr: Array of Arrays
+ * @param dataArrOfArrays: Array of Arrays
  **/
-publicObj.buildFLR = function(options, csvdataArr){
+publicObj.buildFLR = function(options, dataArrOfArrays){
 
     //if defaults not specified, add program's DEFAULT_OPTIONS
-    options = privateObj.initOptions(options);
+    options = privateObj.initOptions(options/**, dataArrOfArrays **/);
 
     //@todo check if value override is set in data loop and perform accordingly - []
 
-    let headers = csvdataArr[0];
-    let rowLength = headers.length;
+    let len = dataArrOfArrays.length;
 
-    if(rowLength !== privateObj.fieldCT) privateObj.handleError('Data mismatch! Invalid schema contains ' + fieldCT + ' fields. Please add missing fields to schema.');
+    let sb = new StringBuilder();
 
+    while(len){ //loop through row of data
 
-    let len = csvdataArr;
+        let row = dataArrOfArrays.pop();
 
-    while(len){
+            for(var i = 0; i <  privateObj.fieldCT; i++){ //loop through schema to determine transformations
 
-        let row = csvdataArr.pop();
+                //for schema reference:
+            //* @array { schema: *[{ name: string, width: int(1), defaultValue: string, padchar: string, justify: string(left), prepad: int, postpad: int}, 'valueAtIndex: int(auto-populated)] }
+                //
+                let justPos  = options.schema[i].justify, //only need to match first char L or R.
+                    width    = options.schema[i].width,
+                    defVal   = options.schema[i].defaultValue,
+                    prePad   = options.schema[i].prepad,
+                    postPad  = options.schema[i].postpad,
+                    dataVal  = options.schema[i].valueAtIndex,
+                    padChar  = options.schema[i].padchar,
+                    override = options.defaults.valueOverride;
 
+                if(override) dataVal = defVal; //pre-build operation
+
+                if(prePad) sb.append(padChar.padStart(prePad, padChar));//first build operation: ALWAYS
+
+                sb.append(dataVal.justify(padChar,width,justPos)); //build field data
+
+                if(postPad) sb.append(padChar.padEnd(postPad,padChar));//last build operation: ALWAYS
+
+            }
+            //create new line for new record
+            sb.append(String.fromCharCode(13));
 
         len -= 1;
-    }
+    }//end looping through rows of data
 
+    return sb.toString('',true);
 };//buildFLR()
-
-
-
-/*****************************************************
- *  Prototype Methods Used In Business Logic
- *****************************************************/
-
-//Find and return unique values against comparator (b)
-Array.prototype.unique = function(b){
-
-    let aLen = this.length,
-        len  = b.length;
-
-    if(aLen < len){
-
-        len = aLen;
-
-        return build(this,b);
-
-    }else{
-
-        return build(b,this);
-    }
-
-    function build(needleArr,haystackArr){
-
-        let uniqueArr = [];
-
-        while(len){
-
-            let curVal = needleArr.pop();
-
-            if(haystackArr.indexOf(curVal) > -1 && uniqueArr.indexOf(curVal) < 0)
-                uniqueArr.push(curVal);
-            len -= 1;
-        }//loop
-
-        return uniqueArr;
-
-    }//build()
-
-};//unique()
-
-//Pad and return a string in specified justification position
-String.prototype.justify = function(char, times, pos){
-
-    switch(pos.toLowerCase()) {
-        case 'left':
-            return this.padEnd(times,char);
-            break;
-        case 'right':
-            return this.padStart(times,char);
-            break;
-        default:
-            throw 'Unable to interpret value: ' + pos + 'for String.justify prototype. Please specify a position of "left" or "right"';
-            break;
-    }
-};
 
 module.exports = publicObj;
