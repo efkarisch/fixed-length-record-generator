@@ -31,5 +31,8 @@
   "dependencies": {
     "another-string-builder": "^1.0.0",
     "require": "^2.4.20"
+  },
+  "devDependencies": {
+    "papaparse": "^4.6.3"
   }
 }

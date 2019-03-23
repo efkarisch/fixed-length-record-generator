@@ -23,6 +23,7 @@
  * 5. Update library to contain/register hooks: https://docs.feathersjs.com/api/hooks.html
  * 6. #5 will allow for things like a validation schema property containing a regex or some other test method
  * 6B. Detect if passed in function, if not assume regex, if regex fails (add test) then throw an error giving a message with the two available types of validation methodologies.
+ * 7. Allow to auto calculate default values based on other fields or field data conditions, like if schema.name == 'State' defaultValue = 'TX'
  **/
 
 

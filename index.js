@@ -245,11 +245,11 @@ publicObj.buildFLR = function(options, dataArrOfArrays){
             //create new line for new record/row
 
             //console.log('done with row: ' + privateObj.currentRow);
-            if(privateObj.currentRow !== privateObj.fieldCT ) sb.append( String('\n') );
+            sb.append( String('\n') );
 
     }//end looping through rows of data
 
-    return sb.toString('',true);
+    return sb.toString('',true).slice(0, -1); //remove trailing carriage return with slice
 };//buildFLR()
 
 module.exports = publicObj;
