@@ -1,0 +1,10 @@
+~*
+.idea/
+node_modules/
+input/
+output/
+.*
+!.gitignore
+test*
+package-lock.json
+
