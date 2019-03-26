@@ -1,6 +1,6 @@
 {
-  "name": "fixedlengthrecordgenerator",
-  "version": "1.0.0",
+  "name": "fixedgen",
+  "version": "1.0.1",
   "description": "Converts data in ArrayOfArrays to a Fixed Length Record",
   "main": "index.js",
   "scripts": {
@@ -8,31 +8,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ekarischcsi/fixed-length-record-generator.git"
-  },
-  "keywords": [
-    "fixed",
-    "length",
-    "record",
-    "flr",
-    "file",
-    "frl",
-    "file",
-    "fixed",
-    "width",
-    "record"
-  ],
-  "author": "Edward Karisch",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ekarischcsi/fixed-length-record-generator/issues"
-  },
-  "homepage": "https://github.com/ekarischcsi/fixed-length-record-generator#readme",
-  "dependencies": {
-    "another-string-builder": "^1.0.0",
-    "require": "^2.4.20"
-  },
-  "devDependencies": {
-    "papaparse": "^4.6.3"
+    "url": "git+https://github.com/ClaimSquare/fixed-length-record-generator.git",
+    "keywords": [
+      "fixed length record",
+      "flr file",
+      "frl file",
+      "fixed width record"
+    ],
+    "author": "Catastrophe Solutions International",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/ClaimSquare/fixed-length-record-generator/issues"
+    },
+    "homepage": "https://github.com/ClaimSquare/fixed-length-record-generator#readme",
+    "dependencies": {
+      "another-string-builder": "^1.0.0"
+    },
+    "devDependencies": {
+      "papaparse": "^4.6.3"
+    }
   }
 }
